@@ -1,103 +1,86 @@
-#Import os module to create file path accross operating systems
+#PyBank
+# Import os module to create file path accross operating systems
 import os
 
-#Module for reading csv file
+# Module for reading csv file
 import csv
 
-#Open the csv
-csvpath = os.path.join('election_data.csv')
+csvpath = os.path.join('budget_data.csv')
 
+ #Reading using csv module
+with open(csvpath, newline='') as csvfile:
 
-#Create the lists to store data.
-count = 0
-candidatelist = []
-unique_candidate = []
-vote_count = []
-vote_percent = []
+#csv specifies delimiter and variable that holds content
+ csvreader = csv.reader(csvfile, delimiter=",")
 
+ #read the header row first
+ csv_header = next(csvreader)
 
-#Reading using csv module
-with open(csvpath, newline="") as csvfile:
+ # Create list to store data
+ profit = []
+ monthly_changes = []
+ date = []
+ count = 0
+ total_profit =  0
+ total_change_profits = 0
+ initial_profit = 0
 
-    csvreader = csv.reader(csvfile, delimiter=",")
+ # Conduct Ask
+ for row in csvreader:
+   # Use count to count the number months in this dataset
+   count = count + 1
 
-    csv_header = next(csvreader)
+   # Will need it when collecting the greatest increase and decrease in profits
+   date.append(row[0])
 
-    #Conduct ask
-    for row in csvreader:
+   # Append the profit information & calculate the total profit
+   profit.append(row[1])
 
-        # Count the total number of votes
-        count = count + 1
+   total_profit = total_profit + int(row[1])
 
-        # Set the candidate names to candidatelist
+   # Calculate the average change in profits from month to month. Then calulate the average change in profits
+   final_profit = int(row[1])
 
-        candidatelist.append(row[2])
+   monthly_change_profits = final_profit - initial_profit
 
-        # Create a set from the candidatelist to get the unique candidate names
+   # Store these monthly changes in a list
+   monthly_changes.append(monthly_change_profits)
 
-    for x in set(candidatelist):
+   total_change_profits = total_change_profits + monthly_change_profits
 
-        unique_candidate.append(x)
+   initial_profit = final_profit
 
-        # y is the total number of votes per candidate
+   # Calculate the average change in profits
 
-        y = candidatelist.count(x)
+   average_change_profits = round(total_change_profits / count,2)
 
-        vote_count.append(y)
+   # Find the max and min change in profits and the corresponding dates these changes were obeserved
 
-        # z is the percent of total votes per candidate
+   greatest_increase_profits = max(monthly_changes)
 
-        z = round(y/count*100,2)
+   greatest_decrease_profits = min(monthly_changes)
 
-        vote_percent.append(z)
+   increase_date = date[monthly_changes.index(greatest_increase_profits)]
 
-        
+   decrease_date = date[monthly_changes.index(greatest_decrease_profits)]
 
-    winning_vote_count = max(vote_count)
+   print("----------------------------------------------------------")
+   print("Financial Analysis")
+   print("----------------------------------------------------------")
+   print(f"Total Months:{count}")
+   print(f"Total Profits:  $ {total_profit}")
+   print(f"Average Change:  $ {average_change_profits}")
+   print(f"Greatest Increase in Profits: {increase_date} (${greatest_increase_profits})")
+   print(f"Greatest Decrease in Profits: {increase_date} (${greatest_decrease_profits})")
+   print("----------------------------------------------------------")
 
-    winner = unique_candidate[vote_count.index(winning_vote_count)]
-
- 
-print("-------------------------")
-
-print("Election Results")   
-
-print("-------------------------")
-
-print("Total Votes :" + str(count))    
-
-print("-------------------------")
-
-for i in range(len(unique_candidate)):
-
-            print(unique_candidate[i] + ": " + str(vote_percent[i]) +"% (" + str(vote_count[i])+ ")")
-
-print("-------------------------")
-
-print("The winner is: " + winner)
-
-print("-------------------------")
-
-
-
-# Print to a text file: election_results.txt
-
-with open('election_results.txt', 'w') as text:
-
-    text.write("Election Results\n")
-
-    text.write("---------------------------------------\n")
-
-    text.write("Total Vote: " + str(count) + "\n")
-
-    text.write("---------------------------------------\n")
-
-    for i in range(len(set(unique_candidate))):
-
-        text.write(unique_candidate[i] + ": " + str(vote_percent[i]) +"% (" + str(vote_count[i]) + ")\n")
-
-    text.write("---------------------------------------\n")
-
-    text.write("The winner is: " + winner + "\n")
-
-    text.write("---------------------------------------\n")
+   with open('financial_analysis.txt', 'w') as text:
+     text.write("----------------------------------------------------------\n")
+     text.write("  Financial Analysis" + "\n")
+     text.write("----------------------------------------------------------\n\n")
+     text.write(f"Total Months:{count}" + "\n")
+     text.write(f"Total Profits:  $ {total_profit}" + "\n")
+     text.write(f"Average Change:  $ {average_change_profits}" + "\n")
+     text.write(f"Greatest Increase in Profits: {increase_date} (${greatest_increase_profits})" + "\n")
+     text.write(f"Greatest Decrease in Profits: {increase_date}  (${greatest_decrease_profits})" + "\n")
+     text.write("----------------------------------------------------------\n")
